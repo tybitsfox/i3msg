@@ -1,0 +1,91 @@
+i3wm
+这是一款类似与awesome和dwm的tiling平铺式窗口管理器，操作方便,配置简单仅仅一
+个配置文件：~/.i3/config。一些awesome下的使用操作i3都能够实现。并且i3一些特
+有的操作也非常实用。
+安装说明：
+debian下的i3版本较低，还不能支持xft字体，如果要使用高版本的i3只能下载源代码
+自行编译安装，一些所需的库文件：
+libxcb-keysyms1-dev
+libxcb-aux0-dev
+libxcb-icccm1-dev
+libyajl-dev
+libsnacc-dev
+libstartup-notification0-dev
+libxcb-randr0-dev
+libpcre3-dev
+libev-dev
+libxcb-xinerama0-dev
+libev-libevent-dev
+libevent-dev
+libeval0-dev
+libev-dev
+另需说明一下，testing版本的依赖库能够顺利的完成编译，而stable版的debian由于
+libxcb和libev版本太低，很难正确的编译出来，我在编译的时候，libxcb中某些头文
+件我是手动添加到源文件的，而libev更是麻烦，我只能更换为testing的源才顺利编译
+完成。
+配置说明：
+1、一些基本的操作：
+关闭窗口 bindsym $mod+Shift+Q      
+启动菜单 bindsym $mod+d exec dmenu_run    我暂时没用
+重新加载配置文件  bindsym $mod+Shift+C  reload
+重启i3wm bindsym $mod+Shift+R	restart
+退出i3wm bindsym $mod+Shift+E	exit
+2、窗口焦点、大小调整、铺放样式的操作：
+水平铺放的窗口焦点的变换 bindsym $mod+j focus left (keyword focus left)
+						 bindsym $mod+semicolon(;) focus right
+纵向铺放的窗口焦点的变换 bindsym $mod+k focus down
+						 bindsym $mod+l focus up
+水平铺放的窗口的移动	 bindsym $mod+Shift+j move left (keyword move left)
+铺放样式的变化			 bindsym $mod+s layout stacking 层叠堆放
+(keyword layout)    	 bindsym $mod+w layout tabbed   标签式
+						 bindsym $mod+e layout default  平铺式
+横向、纵向平铺设定       bindsym $mod+h split h			横向平铺
+(keyword split h\v)		 bindsym $mod+v split v			纵向平铺
+浮动窗口 				 bindsym $mod+Shift+space floating toggle
+浮动模式下焦点切换       bindsym $mod+space focus mode_toggle
+3、工作区切换：
+工作区切换				 bindsym $mod+1(2、3、4..0) workspace 1(2、3、4..0)
+将焦点窗口移动至其他工作区 bindsym $mod+Shift+1 move container to workspace 1
+4、启动程序的快捷键设置：
+绑定启动程序的快捷键  bindsym $mod+x exec firefox (keyword exec)
+指定启动程序的浮动模式 for_window [class="Audacious"] floating enable
+指定启动程序放置在哪个工作区  assign [class="Firefox"] 9
+----------------------------以上为基本操作---------------------------------
+下面介绍下一些特有的操作：
+1、vim格式的标记、跳转：
+#mark current window
+bindsym $mod+m exec i3-input -F 'marks %s' -l 1 -P 'Mark: '
+#goto mark
+bindsym $mod+apostrophe exec i3-input -F '[con_mark="%s"] focus' -l 1 -P 'Go to: '
+2、mode的应用：
+mode的使用，可以将一些功能相似的操作作为一个集合放置到一个mode中，便于对这些操作管
+理和记忆。另外mode是以自定义字符串作为标记的，而这些字符串又可以用于操作的提示：
+mode "layout q w e r-floating" {
+		bindsym q layout stacking
+		bindsym w layout tabbed
+		bindsym e layout default
+		bindsym r floating toggle
+
+		bindsym Escape mode "default"     #退出mode的操作
+}
+bindsym $mod+p mode "layout q w e r-floating"
+在进入一个mode的时候需要使用类似于vim的操作，使用esc退出本次mode操作，如果想选择了
+某个操作直接退出mode的话可以按下列方式：
+ bindsym q mode "default" layout stacking
+3、ibar的应用：
+我喜欢这款wm的原因之一就是他可以像awesome一样将一些conky信息放置在状态栏上，做法为：
+bar {
+#		font pango:YaHei Consolas Hybrid 10
+#	        status_command bash -c "echo \"aaaaaa\""
+#	        status_command sh -c date
+			status_command i3bar.sh
+		colors{
+			background	#000000
+			statusline  #ffff00
+		}
+}
+在定义的这个bar里，可以指定使用的字体，颜色，可通过status_command 将执行的某一程序的
+结果显示出来。我可以利用这个功能将自定义的系统信息和天气信息显示在状态栏上。
+----------------------------------end-----------------------------------
+该wm还有个比awesome优秀的地方，就是各种全屏游戏无压力。
+
