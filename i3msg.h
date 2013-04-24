@@ -88,6 +88,5 @@ void get_batt();//battery get
 void get_cpu();//cpu status
 void get_mem();//mem status
 void get_net();//net up/down
-void set_unique(char *c);//unique
 void get_temp();//cpu temperature
 
