@@ -3,30 +3,14 @@
  						tybitsfox  2013-4-3
  */
 #include<time.h>
-#include"awemsg.h"
+#include"i3msg.h"
 //{{{ int main(int argc,char** argv)
 int main(int argc,char** argv)
 {
 	char* av[]={weather,0};
 	int i,j,job[jc];
 	static int k=0;
-	set_unique(argv[0]);
-	//if(chg_daemon()!=0)
-	//	exit(0);
-	//sys_log(argv[0],"awesome_panel write tool ready\n");
 	get_config();
-	//为保证正常获取，执行三次
-	/*for(i=0;i<3;i++)
-	{
-		if(system(weather)==-1)
-		{
-			sys_log(argv[0],"error to get weather\n");
-			sleep(1);
-			continue;
-		}
-		else
-			break;
-	}*/
 	format_msg(0);//初次运行时获取天气
 	get_batt();// 初次运行时获取电量
 	get_cpu();//cpu
@@ -34,87 +18,6 @@ int main(int argc,char** argv)
 	get_net();//net
 	get_temp();//temperature
 	disp_msg();
-	/*
-	if(disp_msg()==0)
-	{
-		sys_log(argv[0],fmt);
-	}	
-	else
-	{
-		sys_log(argv[0],"show messge error\n");
-		exit(0);
-	}
-	//return 0;
-	for(i=0;i<jc;i++)
-		job[i]=0;
-	while(1)
-	{
-		sleep(2);
-		for(i=0;i<jc;i++)
-		{
-			job[i]++;
-			switch(i)
-			{
-				case 0://job 1 获取天气数据
-					if(job[0]>=tj[0].n)
-					{
-						job[0]=0;
-						system(weather);
-						format_msg(0);
-						k=1;
-					}
-					break;
-				case 1: //job2-battery 电池电量
-					if(job[1]>=tj[1].n)
-					{
-						job[1]=0;
-						get_batt();
-						//format_msg(1); nouse here
-						k=1;
-					}
-					break;
-				case 2://cpu 
-					if(job[2]>=tj[2].n)
-					{
-						job[2]=0;
-						get_cpu();
-						k=1;
-					}
-					break;
-				case 3://mem
-					if(job[3]>=tj[3].n)
-					{
-						job[3]=0;
-						get_mem();
-						k=1;
-					}
-					break;
-				case 4://net
-					if(job[4]>=tj[4].n)
-					{
-						job[4]=0;get_net();k=1;
-					}
-					break;
-				case 5:// temperature
-					if(job[5]>=tj[5].n)
-					{
-						job[5]=0;get_temp();k=1;
-					}
-					break;
-			};
-		}
-		if(k)
-		{
-			k=0;
-			if(disp_msg()!=0)
-			{
-				sys_log(argv[0],"show messge error#1\n");
-				exit(0);
-			}
-		}
-	}
-	sys_log(argv[0],"now testing over...\n");
-	*/
 	exit(0);
 }//}}}
 //{{{ int chg_daemon()
@@ -189,27 +92,46 @@ void format_msg(int i)
 //{{{ int disp_msg()
 int disp_msg()
 {
-	//FILE *f;
+	int mo[12]={31,28,31,30,31,30,31,31,30,31,30,31};
 	struct tm *p;
 	time_t txm;
-	int i;
+	int i,j,k,l,y;
 	char ch[100];
 	zero(ch);
 	time(&txm);
 	p=gmtime(&txm);
+	j=p->tm_mday;
 	i=p->tm_hour+8;
+	y=p->tm_year+1900;
+	l=p->tm_mon+1;
 	if(i>23)
+	{
 		i-=24;
-	snprintf(ch,sizeof(ch),"%d年%d月%d日 %d时%d分",p->tm_year+1900,p->tm_mon+1,p->tm_mday,i,p->tm_min);
-	//f=popen(awesome,"w");
-	//if(f==NULL)
-	//	return 1;
+		j+=1;
+		k=p->tm_year+1900;
+		if(k%4==0)
+		{
+			k=k/4;
+			if(k%100==0 && k%400!=0)
+				mo[1]=28;
+			else
+				mo[1]=29;
+		}
+		if(j>mo[p->tm_mon])
+		{
+			l=p->tm_mon+2;
+			j=1;
+		}
+		if(l>12)
+		{
+			y=p->tm_year+1901;
+			l=1;
+		}
+	}
+	snprintf(ch,sizeof(ch),"%d年%d月%d日 %d时%d分",y,l,j,i,p->tm_min);
 	memset(fmt,0,chlen);
-	//snprintf(fmt,chlen,out_msg,col_yellow,msg[5],msg[8],msg[4],msg[3],msg[6],msg[7],msg[2],msg[1],msg[0]);
 	snprintf(fmt,chlen,out_msg,msg[5],msg[8],msg[4],msg[3],msg[6],msg[7],msg[2],msg[1],msg[0],ch);
 	printf(fmt);
-	//fputs(fmt,f);
-	//pclose(f);
 	return 0;
 }//}}}
 //{{{ void get_batt();//battery get
@@ -252,7 +174,7 @@ lop1:
     }
     fclose(f);
     ft=(float)j/i;
-    snprintf(msg[2],100,"%2.0f%%℃ ",ft*100);
+    snprintf(msg[2],100,"%2.0f%% ",ft*100);
     return ;
 
 }//}}}
@@ -547,67 +469,6 @@ void get_net()
 	snprintf(msg[6],100,"%0.1fKB ",fot);
 	fot=(float)n[1]/1024;
 	snprintf(msg[7],100,"%0.1fKB ",fot);
-	return;
-}//}}}
-//{{{ void set_unique(char *c)
-void set_unique(char *c)
-{
-	int fd1,fd2,i,j,k;
-	char buf[100],cmd[100],*ch;
-	pid_t pid;
-	pid=getpid();
-	zero(cmd);
-	ch=strrchr(c,'/');
-	if(ch==NULL)
-	{
-		sys_log(c,"strrchr error\n");
-		return;
-	}
-	memcpy(cmd,ch,strlen(ch));
-	//ch=getenv("_");
-	memcpy(cmd,c,strlen(c));//save path name
-	fd1=open(tmpfile,O_RDONLY|O_CREAT,0644);
-	if(fd1<0)
-	{
-		sys_log(c,"open or create tmpfile error\n");
-		return;
-	}
-	zero(buf);
-	i=read(fd1,buf,sizeof(buf));
-	close(fd1);
-	if(i<=1)//create new
-		goto rep_1;
-	k=atoi(buf);
-	if(k==pid)
-		return;
-	zero(buf);
-	snprintf(buf,sizeof(buf),namefile,k);
-	fd2=open(buf,O_RDONLY);
-	if(fd2<0)
-	{
-		if(errno==2)//没有该进程id对应的文件，该进程已退出
-			return;
-		sys_log(c,"get proc file error\n");
-		return;
-	}
-	zero(buf);
-	i=read(fd2,buf,sizeof(buf));
-	close(fd2);
-	if(strstr(buf,cmd)!=NULL)
-	{//find it
-		kill((pid_t)k,9);
-	}
-rep_1:		
-	fd1=open(tmpfile,O_RDWR|O_TRUNC);
-	if(fd1<0)
-	{
-		sys_log(c,"open file error\n");
-		return;
-	}
-	zero(buf);
-	snprintf(buf,sizeof(buf),"%d",pid);
-	write(fd1,buf,strlen(buf));
-	close(fd1);
 	return;
 }//}}}
 //{{{ void get_temp()
