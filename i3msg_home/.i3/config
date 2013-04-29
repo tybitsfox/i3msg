@@ -25,27 +25,53 @@ bindsym $mod+Return exec xterm -fa 'YaHei Consolas Hybrid':charwidth=9 -fs 11 -b
 
 #set floating mode
 for_window [class="Audacious"] floating enable
+for_window [class="Xpdf"] floating enable
 #for_window [class["Audacious"] border 0pixel
 #assign program to workspace  
 assign [class="Audacious"] 9
 assign [class="Firefox"] 2
-mode "exec zxc-term a-web s-pdf d-png qw-snap e-mp3" {
+mode "程序: zxc-终端 a-浏览器 qw-抓图 s-mp3" {
 		bindsym z mode "default" exec xterm -fa 'YaHei Consolas Hybrid':charwidth=9 -fs 11 -bg black -fg gray90
 		bindsym x mode "default" exec xterm -fa "YaHei Consolas Hybrid":charwidth=7 -fs 8 -bg black -fg gray90
 		bindsym c mode "default" exec xterm -fa "YaHei Consolas Hybrid":charwidth=10 -fs 13 -bg black -fg gray90
 		bindsym a mode "default" exec firefox 
-		bindsym s mode "default" exec xp.sh
-		bindsym d mode "default" exec showpng
+#		bindsym s mode "default" exec xp.sh
+#		bindsym d mode "default" exec showpng
 		bindsym q mode "default" exec ksnapshot
 		bindsym w mode "default" exec scrot %Y%m%d-%H.%M.%S.png -d 2
-		bindsym e mode "default" exec audacious
+		bindsym s mode "default" exec audacious
+#		bindsym f mode "default" exec xterm -fa "YaHei Consolas Hybrid":charwidth=7 -fs 8 -bg black -fg gray90 showxpdf
 
 		bindsym Escape mode "default"
 }
 
-bindsym $mod+z mode "exec zxc-term a-web s-pdf d-png qw-snap e-mp3"
+bindsym $mod+z mode "程序: zxc-终端 a-浏览器 qw-抓图 s-mp3"
+
+mode "脚本 z-内核pdf x-内核pdf定位 c-内核图片" {
+		bindsym z mode "default" exec xp.sh
+		bindsym c mode "default" exec showpng
+		bindsym x mode "default" exec xterm -fa "YaHei Consolas Hybrid":charwidth=7 -fs 8 -bg black -fg gray90 showxpdf
+
+		bindsym Escape mode "default"
+}
+bindsym $mod+o mode "脚本 z-内核pdf x-内核pdf定位 c-内核图片"
+
+mode "帮助：mod+(z-程序 p-窗口布局 o-脚本 w-移动 r-大小 ESC-系统)" {
+		bindsym space mode "default"
+		bindsym Escape mode "default"
+		bindsym Return mode "default"
+}
+bindsym F1 mode "帮助：mod+(z-程序 p-窗口布局 o-脚本 w-移动 r-大小 ESC-系统)"
+
+mode "系统：z-关闭活动窗口 c-加载配置 r-退出" {
+		bindsym z mode "default" kill
+		bindsym c mode "default" reload
+		bindsym r mode "default" exit
+		bindsym Escape mode "default"
+}
+bindsym $mod+Escape mode "系统：z-关闭活动窗口 c-加载配置 r-退出"
 # kill focused window
-bindsym $mod+Shift+Q kill
+#bindsym $mod+Shift+Q kill
 
 # start dmenu (a program launcher)
 bindsym $mod+d exec dmenu_run
@@ -69,7 +95,7 @@ bindsym $mod+Shift+L move up
 bindsym $mod+Shift+colon move right
 
 #move or change focus window
-mode "mov up or shift up" {
+mode "移动：方向键-焦点移动 shift+方向键-位置移动" {
 	bindsym Left focus left
 	bindsym Down focus down
 	bindsym Up focus up
@@ -83,7 +109,7 @@ mode "mov up or shift up" {
 	bindsym Escape mode "default"
 }
 
-bindsym $mod+w mode "mov up or shift up"
+bindsym $mod+w mode "移动：方向键-焦点移动 shift+方向键-位置移动"
 # alternatively, you can use the cursor keys:
 #bindsym $mod+Shift+Left move left
 #bindsym $mod+Shift+Down move down
@@ -103,16 +129,16 @@ bindsym $mod+f fullscreen
 #bindsym $mod+s layout stacking
 #bindsym $mod+w layout tabbed
 #bindsym $mod+e layout default
-mode "layout q w e r-floating" {
-		bindsym q layout stacking
-		bindsym w layout tabbed
-		bindsym e layout default
-		bindsym r floating toggle
+mode "窗口布局：q-堆放 w-标签 e-默认 r-浮动" {
+		bindsym q mode "default" layout stacking
+		bindsym w mode "default" layout tabbed
+		bindsym e mode "default" layout default
+		bindsym r mode "default" floating toggle
 
 		bindsym Escape mode "default"
 }
 
-bindsym $mod+p mode "layout q w e r-floating"
+bindsym $mod+p mode "窗口布局：q-堆放 w-标签 e-默认 r-浮动"
 # toggle tiling / floating
 #bindsym $mod+Shift+space floating toggle
 
@@ -157,16 +183,16 @@ bindsym $mod+Shift+parenleft move container to workspace 9
 bindsym $mod+Shift+parenright move container to workspace 10
 
 # reload the configuration file
-bindsym $mod+Shift+C reload
+#bindsym $mod+Shift+C reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+R restart
 # exit i3 (logs you out of your X session)
-bindsym $mod+Shift+E exit
+#bindsym $mod+Shift+E exit
 
 
 
 # resize window (you can also use the mouse for that)
-mode "resize j k l ;" {
+mode "窗口大小：(j k l ;)-调整大小" {
         # These bindings trigger as soon as you enter the resize mode
 
         # Pressing left will shrink the window’s width.
@@ -189,9 +215,9 @@ mode "resize j k l ;" {
         bindsym Escape mode "default"
 }
 
-bindsym $mod+r mode "resize j k l ;"
+bindsym $mod+r mode "窗口大小：(j k l ;)-调整大小"
 exec_always  /root/.conky/weather
-exec	feh --bg-scale /root/.i3/background.jpg
+exec  feh --bg-scale /root/.i3/3089r1t.png
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
