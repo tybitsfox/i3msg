@@ -1,3 +1,4 @@
+x-window-manager -> /usr/bin/startfluxbox
 i3wm
 这是一款类似与awesome和dwm的tiling平铺式窗口管理器，操作方便,配置简单仅仅一
 个配置文件：~/.i3/config。一些awesome下的使用操作i3都能够实现。并且i3一些特

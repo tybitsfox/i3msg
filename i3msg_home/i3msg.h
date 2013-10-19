@@ -39,7 +39,9 @@
 //电池电量获取所需
 #define sfile   "/sys/class/power_supply/BAT1/uevent"
 #define power_base  "POWER_SUPPLY_ENERGY_FULL="
-#define power_now   "POWER_SUPPLY_ENERGY_NOW="
+//#define power_base  "POWER_SUPPLY_CHARGE_FULL="
+#define power_now	"POWER_SUPPLY_ENERGY_NOW="
+//#define power_now   "POWER_SUPPLY_CHARGE_NOW="
 //CPU
 #define cpu_file	"/proc/stat"
 //memory
@@ -62,7 +64,7 @@
 #define  namefile	"/proc/%d/cmdline"
 //信息显示的格式
 //#define	 out_msg	"conkytext.text = \"<span color='%s'>| CPU:%s%s|内存:%s %s| 流量 ↓%s↑%s| 电量:%s| 泰安 %s %s |</span>\"\n"
-#define	 out_msg	"| CPU:%s%s| 内存:%s %s| 流量 %s%s| 电量:%s| 泰安 %s %s | %s\n"  //2013-4-21添加天气
+#define	 out_msg	"| CPU:%s%s| 内存:%s %s| 流量 %s%s| 泰安 %s %s | %s\n"  //2013-4-21添加天气
 //macro define
 #define	 zero(A)	memset(A,0,sizeof(A))
 #define  sys_log(a,b)	openlog(a,LOG_PID,LOG_USER);syslog(LOG_NOTICE,b);closelog();

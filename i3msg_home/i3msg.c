@@ -196,47 +196,24 @@ int disp_msg()
 	char ch[100];
 	zero(ch);
 	time(&txm);
+	txm+=3600*8;//转换为东8时区
 	p=gmtime(&txm);
 	j=p->tm_mday;
-	i=p->tm_hour+8;
+	i=p->tm_hour;
 	y=p->tm_year+1900;
 	l=p->tm_mon+1;
-	if(i>23)
-	{
-		i-=24;
-		j+=1;
-		k=p->tm_year+1900;
-		if(k%4==0)
-		{
-			k=k/4;
-			if(k%100==0 && k%400!=0)
-				mo[1]=28;
-			else
-				mo[1]=29;
-		}
-		if(j>mo[p->tm_mon])
-		{
-			l=p->tm_mon+2;
-			j=1;
-		}
-		if(l>12)
-		{
-			y=p->tm_year+1901;
-			l=1;
-		}
-	}
 	snprintf(ch,sizeof(ch),"%d年%d月%d日 %d时%d分",y,l,j,i,p->tm_min);
-	memset(fmt,0,chlen);
-	snprintf(fmt,chlen,out_msg,msg[5],msg[8],msg[4],msg[3],msg[6],msg[7],msg[2],msg[1],msg[0],ch);
+	memset(fmt,0,chlen);memset(msg[2],0,sizeof(msg[2]));
+	snprintf(fmt,chlen,out_msg,msg[5],msg[8],msg[4],msg[3],msg[6],msg[7],msg[1],msg[0],ch);
 	printf(fmt);
 	return 0;
 }//}}}
 //{{{ void get_batt();//battery get
 void get_batt()//battery get
 {
-    float ft;
+    float i,j,ft;
     FILE *f;
-    int i,j,k,l;
+    int k,l;
     char *c,ch[512];
 	memset(msg[2],0,100);
     f=fopen(sfile,"r");
@@ -253,7 +230,7 @@ void get_batt()//battery get
         if(c!=NULL)
         {
             c+=strlen(power_base);
-            i=atoi(c);
+            i=atof(c);
             k++;
             goto  lop1;
         }
@@ -261,7 +238,7 @@ void get_batt()//battery get
         if(c!=NULL)
         {
             c+=strlen(power_now);
-            j=atoi(c);
+            j=atof(c);
             k++;
         }
 lop1:
@@ -270,7 +247,10 @@ lop1:
             break;
     }
     fclose(f);
-    ft=(float)j/i;
+	if(i==0)
+	{	snprintf(msg[2],100,"aaa");return;}
+	else
+   		 ft=(float)j/i;
     snprintf(msg[2],100,"%2.0f%% ",ft*100);
     return ;
 
