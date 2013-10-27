@@ -81,7 +81,7 @@ struct T_J tj[jc];
 char   msg[9][100];
 char   fmt[chlen];
 int	   cpu_v[4];//calc cpu avg
-int	   net_ud[2];//calc net flow
+unsigned long long	   net_ud[2];//calc net flow
 int chg_daemon(); //转为守护进程运行
 void get_config();//因为没用配置文件，此函数改为初始化基本数据。
 void format_msg(int i);//除了天气显示使用，其余的都在各自的函数独立实现了信息格式化。
