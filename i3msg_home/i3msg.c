@@ -234,9 +234,9 @@ int disp_msg()
 //{{{ void get_batt();//battery get
 void get_batt()//battery get
 {
-    float ft;
+    float i,j,ft;
     FILE *f;
-    int i,j,k,l;
+    int k,l;
     char *c,ch[512];
 	memset(msg[2],0,100);
     f=fopen(sfile,"r");
@@ -253,7 +253,7 @@ void get_batt()//battery get
         if(c!=NULL)
         {
             c+=strlen(power_base);
-            i=atoi(c);
+            i=atof(c);
             k++;
             goto  lop1;
         }
@@ -261,7 +261,7 @@ void get_batt()//battery get
         if(c!=NULL)
         {
             c+=strlen(power_now);
-            j=atoi(c);
+            j=atof(c);
             k++;
         }
 lop1:
@@ -270,7 +270,10 @@ lop1:
             break;
     }
     fclose(f);
-    ft=(float)j/i;
+	if(i==0)
+	{	snprintf(msg[2],100,"aaa");return;}
+	else
+   		 ft=(float)j/i;
     snprintf(msg[2],100,"%2.0f%% ",ft*100);
     return ;
 
@@ -445,7 +448,8 @@ void get_mem()
 void get_net()
 {//取得文件：/proc/net/dev,数据位于第四行，需要计算两次访问之间字节差以获得进出的流量 1,9
 	FILE *file;
-	int i,j,k,l,m[2],n[2];
+	int i,j,k,l;
+	unsigned long long	m[2],n[2];
 	float fot;
 	char *c1,*c2,ch[300],buf[20];
 	for(i=0;i<2;i++)
@@ -475,7 +479,7 @@ void get_net()
 					i++;
 				memset(buf,0,20);
 				memcpy(buf,c2,i);
-				net_ud[0]=atoi(buf);
+				net_ud[0]=atoll(buf);
 				j+=i;
 				k++;
 			}
@@ -488,7 +492,7 @@ void get_net()
 						i++;
 					memset(buf,0,20);
 					memcpy(buf,c2,i);
-					net_ud[1]=atoi(buf);
+					net_ud[1]=atoll(buf);
 					break;
 				}
 				if(k!=9)
@@ -533,7 +537,7 @@ void get_net()
 					i++;
 				memset(buf,0,20);
 				memcpy(buf,c2,i);
-				m[0]=atoi(buf);
+				m[0]=atoll(buf);
 				j+=i;
 				k++;
 			}
@@ -546,7 +550,7 @@ void get_net()
 						i++;
 					memset(buf,0,20);
 					memcpy(buf,c2,i);
-					m[1]=atoi(buf);
+					m[1]=atoll(buf);
 					break;
 				}
 				if(k!=9)
