@@ -11,110 +11,15 @@ int main(int argc,char** argv)
 	int i,j,job[jc];
 	static int k=0;
 	set_unique(argv[0]);
-	//if(chg_daemon()!=0)
-	//	exit(0);
-	//sys_log(argv[0],"awesome_panel write tool ready\n");
 	get_config();
-	//为保证正常获取，执行三次
-	/*for(i=0;i<3;i++)
-	{
-		if(system(weather)==-1)
-		{
-			sys_log(argv[0],"error to get weather\n");
-			sleep(1);
-			continue;
-		}
-		else
-			break;
-	}*/
 	format_msg(0);//初次运行时获取天气
-	get_batt();// 初次运行时获取电量
+	//get_batt();// 初次运行时获取电量
 	get_cpu();//cpu
 	get_mem();//mem
 	get_net();//net
 	get_temp();//temperature
+	get_mailchk();//2014-4-2添加，邮件检查的显示。
 	disp_msg();
-	/*
-	if(disp_msg()==0)
-	{
-		sys_log(argv[0],fmt);
-	}	
-	else
-	{
-		sys_log(argv[0],"show messge error\n");
-		exit(0);
-	}
-	//return 0;
-	for(i=0;i<jc;i++)
-		job[i]=0;
-	while(1)
-	{
-		sleep(2);
-		for(i=0;i<jc;i++)
-		{
-			job[i]++;
-			switch(i)
-			{
-				case 0://job 1 获取天气数据
-					if(job[0]>=tj[0].n)
-					{
-						job[0]=0;
-						system(weather);
-						format_msg(0);
-						k=1;
-					}
-					break;
-				case 1: //job2-battery 电池电量
-					if(job[1]>=tj[1].n)
-					{
-						job[1]=0;
-						get_batt();
-						//format_msg(1); nouse here
-						k=1;
-					}
-					break;
-				case 2://cpu 
-					if(job[2]>=tj[2].n)
-					{
-						job[2]=0;
-						get_cpu();
-						k=1;
-					}
-					break;
-				case 3://mem
-					if(job[3]>=tj[3].n)
-					{
-						job[3]=0;
-						get_mem();
-						k=1;
-					}
-					break;
-				case 4://net
-					if(job[4]>=tj[4].n)
-					{
-						job[4]=0;get_net();k=1;
-					}
-					break;
-				case 5:// temperature
-					if(job[5]>=tj[5].n)
-					{
-						job[5]=0;get_temp();k=1;
-					}
-					break;
-			};
-		}
-		if(k)
-		{
-			k=0;
-			if(disp_msg()!=0)
-			{
-				sys_log(argv[0],"show messge error#1\n");
-				exit(0);
-			}
-		}
-	}
-	sys_log(argv[0],"now testing over...\n");
-	*/
 	exit(0);
 }//}}}
 //{{{ int chg_daemon()
@@ -189,7 +94,7 @@ void format_msg(int i)
 //{{{ int disp_msg()
 int disp_msg()
 {
-	int mo[12]={31,28,31,30,31,30,31,31,30,31,30,31};
+	//int mo[12]={31,28,31,30,31,30,31,31,30,31,30,31};
 	struct tm *p;
 	time_t txm;
 	int i,j,k,l,y;
@@ -203,8 +108,8 @@ int disp_msg()
 	y=p->tm_year+1900;
 	l=p->tm_mon+1;
 	snprintf(ch,sizeof(ch),"%d年%d月%d日 %d时%d分",y,l,j,i,p->tm_min);
-	memset(fmt,0,chlen);memset(msg[2],0,sizeof(msg[2]));
-	snprintf(fmt,chlen,out_msg,msg[5],msg[8],msg[4],msg[3],msg[6],msg[7],msg[1],msg[0],ch);
+	memset(fmt,0,chlen);//memset(msg[2],0,sizeof(msg[2]));
+	snprintf(fmt,chlen,out_msg,msg[9],msg[2],msg[5],msg[8],msg[4],msg[3],msg[6],msg[7],msg[1],msg[0],ch);
 	printf(fmt);
 	return 0;
 }//}}}
@@ -628,9 +533,46 @@ void get_temp()
 	fclose(file);
 	i=atoi(buf);
 	snprintf(msg[8],sizeof(msg[8]),"%d℃ ",i/1000);
+	zero(msg[2]);
+	file=fopen(video_temp,"r");
+	if(file==NULL)
+	{
+		snprintf(msg[2],sizeof(msg[2]),"00 ");
+		return;
+	}
+	zero(buf);
+	fgets(buf,sizeof(buf),file);
+	fclose(file);
+	i=atoi(buf);
+	snprintf(msg[2],sizeof(msg[2]),"%d℃ ",i/1000);
 	return;
 }//}}}
-
+//{{{ void get_maichk()
+void get_mailchk()
+{
+	int i;
+	FILE *file;
+	memset(msg[9],0,100);
+	file=fopen(mailfile,"r");
+	if(file==NULL)
+	{
+		memcpy(msg[9],"Unknown ",sizeof("unknown "));
+		return;
+	}
+	if(fgets(msg[9],100,file)==NULL)
+	{
+		memcpy(msg[9],"Unknown ",sizeof("unknown "));
+	}
+	else
+	{
+		i=strlen(msg[9]);
+		if(msg[9][i-1]=='\n')
+			msg[9][i-1]=0;			
+	}
+	fclose(file);
+	return;
+};
+//}}}
 
 
 

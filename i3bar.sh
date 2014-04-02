@@ -20,11 +20,16 @@ echo '['
 
 # We send an empty first array of blocks to make the loop simpler:
 echo '[]'
-
+myvar=0
 # Now send blocks with information forever:
 while :;
 do
      echo ",[{\"name\":\"time\",\"full_text\":\"$(i3msg)\"}]"
 #    echo ",[{\"name\":\"time\",\"full_text\":\"$(date)\"}]"
 	sleep 2
+	let "myvar += 1"
+	if [ $myvar -eq 100 ];then
+		let "myvar = 0"
+		check_mail
+	fi
 done

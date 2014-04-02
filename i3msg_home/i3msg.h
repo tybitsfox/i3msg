@@ -49,7 +49,9 @@
 //net
 #define net_updown	"/proc/net/dev"
 //cpu temperature
-#define cpu_temp	"/sys/class/thermal/thermal_zone0/temp"
+#define cpu_temp	"/sys/devices/platform/coretemp.0/temp2_input"
+#define video_temp	"/sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/temp1_input"
+//#define cpu_temp	"/sys/class/thermal/thermal_zone0/temp"
 //it's also be used on my thinkpad
 //#define cpu_temp	"proc/acpi/ibm/thermal"
 //定义显示信息及色彩
@@ -62,9 +64,10 @@
 //定义临时文件名，用于确定进程的唯一性
 #define  tmpfile	"/tmp/awemsg_tmp.dat"
 #define  namefile	"/proc/%d/cmdline"
+#define  mailfile	"/tmp/checkmail_00123"
 //信息显示的格式
 //#define	 out_msg	"conkytext.text = \"<span color='%s'>| CPU:%s%s|内存:%s %s| 流量 ↓%s↑%s| 电量:%s| 泰安 %s %s |</span>\"\n"
-#define	 out_msg	"| CPU:%s%s| 内存:%s %s| 流量 %s%s| 泰安 %s %s | %s\n"  //2013-4-21添加天气
+#define	 out_msg	"%s|显卡:%s| CPU:%s%s| 内存:%s %s| 流量 %s%s| 泰安 %s %s | %s\n"  //2013-4-21添加天气 2014-4-2添加邮件检查
 //macro define
 #define	 zero(A)	memset(A,0,sizeof(A))
 #define  sys_log(a,b)	openlog(a,LOG_PID,LOG_USER);syslog(LOG_NOTICE,b);closelog();
@@ -78,7 +81,7 @@ struct T_J tj[jc];
 /*msg数组用于保存不同的功能函数获取的待显示的数据，其中msg[0,1]保存了天气信息，msg[2]保存的电量,msg[3,4]保存的内存信息
  msg[5]保存cpu用户进程的使用率，msg[6,7]保存了网络数据流量，msg[8]保存cpu温度。
  */
-char   msg[9][100];
+char   msg[10][100];
 char   fmt[chlen];
 int	   cpu_v[4];//calc cpu avg
 unsigned long long	   net_ud[2];//calc net flow
@@ -92,4 +95,6 @@ void get_mem();//mem status
 void get_net();//net up/down
 void set_unique(char *c);//unique
 void get_temp();//cpu temperature
+void get_mailchk();//2014-4-2 add mailcheck
+
 
