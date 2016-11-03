@@ -1,0 +1,40 @@
+#! /bin/bash
+n1=`grep -n "Status: " /var/mail/tybitsfox126 | wc -l`
+n2=`grep -n "Subject: " /var/mail/tybitsfox126 | wc -l`
+n3=`grep -n "X-Status: " /var/mail/tybitsfox126 | wc -l`
+n4=$((n1-n3))
+if [ "$n4" -eq "$n2" ]
+then
+	a1=""
+else
+	a1=1
+	msg="126邮箱"
+fi	
+n1=`grep -n "Status: " /var/mail/tybitsfox163 | wc -l`
+n2=`grep -n "Subject: " /var/mail/tybitsfox163 | wc -l`
+n3=`grep -n "X-Status: " /var/mail/tybitsfox163 | wc -l`
+n4=$((n1-n3))
+if [ $n4 -eq $n2 ]
+then
+	a2=""
+else
+	a2=1
+	msg="163邮箱"
+fi	
+n1=`grep -n "Status: " /var/mail/tyyyyt | wc -l`
+n2=`grep -n "Subject: " /var/mail/tyyyyt | wc -l`
+n3=`grep -n "X-Status: " /var/mail/tyyyyt | wc -l`
+n4=$((n1-n3))
+if [ $n4 -eq $n2 ]
+then
+	a3=""
+else
+	a3=1
+	msg="yy邮箱"
+fi	
+if [ "$a1" -o "$a2" -o "$a3" ]
+then
+	echo "$msg   你有新邮件了~~" > /tmp/checkmail_00123
+else
+	echo "没有新邮件" > /tmp/checkmail_00123
+fi	

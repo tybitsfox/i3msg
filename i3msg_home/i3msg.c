@@ -7,114 +7,15 @@
 //{{{ int main(int argc,char** argv)
 int main(int argc,char** argv)
 {
-	char* av[]={weather,0};
-	int i,j,job[jc];
-	static int k=0;
-	set_unique(argv[0]);
-	//if(chg_daemon()!=0)
-	//	exit(0);
-	//sys_log(argv[0],"awesome_panel write tool ready\n");
-	get_config();
-	//为保证正常获取，执行三次
-	/*for(i=0;i<3;i++)
-	{
-		if(system(weather)==-1)
-		{
-			sys_log(argv[0],"error to get weather\n");
-			sleep(1);
-			continue;
-		}
-		else
-			break;
-	}*/
+	//get_config();
 	format_msg(0);//初次运行时获取天气
 	get_batt();// 初次运行时获取电量
 	get_cpu();//cpu
 	get_mem();//mem
 	get_net();//net
 	get_temp();//temperature
+	get_mailchk();//2014-4-2添加，邮件检查的显示。
 	disp_msg();
-	/*
-	if(disp_msg()==0)
-	{
-		sys_log(argv[0],fmt);
-	}	
-	else
-	{
-		sys_log(argv[0],"show messge error\n");
-		exit(0);
-	}
-	//return 0;
-	for(i=0;i<jc;i++)
-		job[i]=0;
-	while(1)
-	{
-		sleep(2);
-		for(i=0;i<jc;i++)
-		{
-			job[i]++;
-			switch(i)
-			{
-				case 0://job 1 获取天气数据
-					if(job[0]>=tj[0].n)
-					{
-						job[0]=0;
-						system(weather);
-						format_msg(0);
-						k=1;
-					}
-					break;
-				case 1: //job2-battery 电池电量
-					if(job[1]>=tj[1].n)
-					{
-						job[1]=0;
-						get_batt();
-						//format_msg(1); nouse here
-						k=1;
-					}
-					break;
-				case 2://cpu 
-					if(job[2]>=tj[2].n)
-					{
-						job[2]=0;
-						get_cpu();
-						k=1;
-					}
-					break;
-				case 3://mem
-					if(job[3]>=tj[3].n)
-					{
-						job[3]=0;
-						get_mem();
-						k=1;
-					}
-					break;
-				case 4://net
-					if(job[4]>=tj[4].n)
-					{
-						job[4]=0;get_net();k=1;
-					}
-					break;
-				case 5:// temperature
-					if(job[5]>=tj[5].n)
-					{
-						job[5]=0;get_temp();k=1;
-					}
-					break;
-			};
-		}
-		if(k)
-		{
-			k=0;
-			if(disp_msg()!=0)
-			{
-				sys_log(argv[0],"show messge error#1\n");
-				exit(0);
-			}
-		}
-	}
-	sys_log(argv[0],"now testing over...\n");
-	*/
 	exit(0);
 }//}}}
 //{{{ int chg_daemon()
@@ -227,7 +128,7 @@ int disp_msg()
 	}
 	snprintf(ch,sizeof(ch),"%d年%d月%d日 %d时%d分",y,l,j,i,p->tm_min);
 	memset(fmt,0,chlen);
-	snprintf(fmt,chlen,out_msg,msg[5],msg[8],msg[4],msg[3],msg[6],msg[7],msg[2],msg[1],msg[0],ch);
+	snprintf(fmt,chlen,out_msg,msg[9],msg[5],msg[8],msg[4],msg[3],msg[6],msg[7],msg[2],msg[1],msg[0],ch);
 	printf(fmt);
 	return 0;
 }//}}}
@@ -283,9 +184,9 @@ void get_cpu()
 {
 	float fot;
 	FILE *f;
-	int len,i,j,k[4],t[4],l;
+	int len,i,j,k[5],t[5],l;
 	char ch[mem_len],*c1,*c2,buf[10];
-	for(i=0;i<4;i++)
+	for(i=0;i<5;i++)
 	{
 		k[i]=0;cpu_v[i]=0;
 	}
@@ -299,7 +200,7 @@ void get_cpu()
 	fgets(ch,mem_len,f);
 	fclose(f);
 	c1=ch;len=strlen(ch);
-	for(i=0;i<4;i++)
+	for(i=0;i<5;i++)
 	{
 		len=strlen(c1);
 		for(j=0;j<len;j++)
@@ -342,7 +243,7 @@ void get_cpu()
 	fgets(ch,mem_len,f);
 	fclose(f);
 	c1=ch;len=strlen(ch);
-	for(i=0;i<4;i++)
+	for(i=0;i<5;i++)
 	{
 		len=strlen(c1);
 		for(j=0;j<len;j++)
@@ -373,12 +274,12 @@ void get_cpu()
 			}
 		}
 	}
-	for(i=0;i<4;i++)
+	for(i=0;i<5;i++)
 	{
 		t[i]=k[i]-cpu_v[i];
 		cpu_v[i]=k[i];
 	}
-	fot=(float)t[0]/(t[0]+t[1]+t[2]+t[3]);
+	fot=(float)t[0]/(t[0]+t[1]+t[2]+t[3]+t[4]);
 	snprintf(msg[5],100,"%2.0f%% ",fot*100);
 	return;
 }//}}}
@@ -398,13 +299,13 @@ void get_mem()
 		snprintf(msg[4],100,"oo");
 		return;
 	}
-	for(i=0;i<6;i++)
-	{
+	for(i=0;i<7;i++)
+	{//2016-10-19 debian 8 改为第七行，7为第六行有有效数据
 		memset(ch,0,100);
 		fgets(ch,100,file);
 		if(i==0)
 			memcpy(c[0],ch,100);
-		if(i==5)
+		if(i==6)
 			memcpy(c[1],ch,100);
 	}
 	fclose(file);
@@ -461,8 +362,8 @@ void get_net()
 		snprintf(msg[7],100,"00");
 		return ;
 	}
-	for(i=0;i<4;i++)
-	{
+	for(i=0;i<3;i++)
+	{//2016-10-19 debian 8改为第三行，7为第四行数据
 		memset(ch,0,300);
 		fgets(ch,300,file);
 	}
@@ -519,7 +420,7 @@ void get_net()
 		snprintf(msg[7],100,"00");
 		return ;
 	}
-	for(i=0;i<4;i++)
+	for(i=0;i<3;i++)
 	{
 		memset(ch,0,300);
 		fgets(ch,300,file);
@@ -653,7 +554,32 @@ void get_temp()
 	snprintf(msg[8],sizeof(msg[8]),"%d℃ ",i/1000);
 	return;
 }//}}}
-
+//{{{ void get_maichk()
+void get_mailchk()
+{
+	int i;
+	FILE *file;
+	memset(msg[9],0,100);
+	file=fopen(mailfile,"r");
+	if(file==NULL)
+	{
+		memcpy(msg[9],"Unknown ",sizeof("unknown "));
+		return;
+	}
+	if(fgets(msg[9],100,file)==NULL)
+	{
+		memcpy(msg[9],"Unknown ",sizeof("unknown "));
+	}
+	else
+	{
+		i=strlen(msg[9]);
+		if(msg[9][i-1]=='\n')
+			msg[9][i-1]=0;			
+	}
+	fclose(file);
+	return;
+};
+//}}}
 
 
 
