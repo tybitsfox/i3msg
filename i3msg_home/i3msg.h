@@ -49,14 +49,9 @@
 //net
 #define net_updown	"/proc/net/dev"
 //cpu temperature
-<<<<<<< HEAD
-=======
-#define cpu_temp	"/sys/devices/platform/coretemp.0/temp2_input"
-#define video_temp	"/sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/temp1_input"
->>>>>>> 71710ff01cfd3f702e9589e5c1ff61dd85870cb9
 //#define cpu_temp	"/sys/class/thermal/thermal_zone0/temp"
 //it's also be used on my thinkpad
-#define cpu_temp	"proc/acpi/ibm/thermal"
+#define cpu_temp	"/proc/acpi/ibm/thermal"
 //定义显示信息及色彩
 #define	 col_cyan	"#00ffff"
 #define  col_red	"#ff0000"
@@ -70,11 +65,7 @@
 #define  mailfile	"/tmp/checkmail_00123"
 //信息显示的格式
 //#define	 out_msg	"conkytext.text = \"<span color='%s'>| CPU:%s%s|内存:%s %s| 流量 ↓%s↑%s| 电量:%s| 泰安 %s %s |</span>\"\n"
-<<<<<<< HEAD
 #define	 out_msg	"%s | CPU:%s%s| 内存:%s %s| 流量 %s%s| 电量:%s| 泰安 %s %s | %s\n"  //2013-4-21添加天气 2014-4-2添加邮件检查
-=======
-#define	 out_msg	"%s|显卡:%s| CPU:%s%s| 内存:%s %s| 流量 %s%s| 泰安 %s %s | %s\n"  //2013-4-21添加天气 2014-4-2添加邮件检查
->>>>>>> 71710ff01cfd3f702e9589e5c1ff61dd85870cb9
 //macro define
 #define	 zero(A)	memset(A,0,sizeof(A))
 #define  sys_log(a,b)	openlog(a,LOG_PID,LOG_USER);syslog(LOG_NOTICE,b);closelog();
@@ -90,11 +81,7 @@ struct T_J tj[jc];
  */
 char   msg[10][100];
 char   fmt[chlen];
-<<<<<<< HEAD
 int	   cpu_v[5];//calc cpu avg debian 8 need 0,1,2,3,4
-=======
-int	   cpu_v[4];//calc cpu avg
->>>>>>> 71710ff01cfd3f702e9589e5c1ff61dd85870cb9
 unsigned long long	   net_ud[2];//calc net flow
 int chg_daemon(); //转为守护进程运行
 void get_config();//因为没用配置文件，此函数改为初始化基本数据。
@@ -107,9 +94,4 @@ void get_net();//net up/down
 void set_unique(char *c);//unique
 void get_temp();//cpu temperature
 void get_mailchk();//2014-4-2 add mailcheck
-
-<<<<<<< HEAD
-
-=======
->>>>>>> 71710ff01cfd3f702e9589e5c1ff61dd85870cb9
 

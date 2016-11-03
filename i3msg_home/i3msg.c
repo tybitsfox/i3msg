@@ -7,17 +7,9 @@
 //{{{ int main(int argc,char** argv)
 int main(int argc,char** argv)
 {
-<<<<<<< HEAD
 	//get_config();
-=======
-	char* av[]={weather,0};
-	int i,j,job[jc];
-	static int k=0;
-	set_unique(argv[0]);
-	get_config();
->>>>>>> 71710ff01cfd3f702e9589e5c1ff61dd85870cb9
 	format_msg(0);//初次运行时获取天气
-	//get_batt();// 初次运行时获取电量
+	get_batt();// 初次运行时获取电量
 	get_cpu();//cpu
 	get_mem();//mem
 	get_net();//net
@@ -112,13 +104,8 @@ int disp_msg()
 	y=p->tm_year+1900;
 	l=p->tm_mon+1;
 	snprintf(ch,sizeof(ch),"%d年%d月%d日 %d时%d分",y,l,j,i,p->tm_min);
-<<<<<<< HEAD
 	memset(fmt,0,chlen);
 	snprintf(fmt,chlen,out_msg,msg[9],msg[5],msg[8],msg[4],msg[3],msg[6],msg[7],msg[2],msg[1],msg[0],ch);
-=======
-	memset(fmt,0,chlen);//memset(msg[2],0,sizeof(msg[2]));
-	snprintf(fmt,chlen,out_msg,msg[9],msg[2],msg[5],msg[8],msg[4],msg[3],msg[6],msg[7],msg[1],msg[0],ch);
->>>>>>> 71710ff01cfd3f702e9589e5c1ff61dd85870cb9
 	printf(fmt);
 	return 0;
 }//}}}
@@ -340,11 +327,7 @@ void get_net()
 {//取得文件：/proc/net/dev,数据位于第四行，需要计算两次访问之间字节差以获得进出的流量 1,9
 	FILE *file;
 	int i,j,k,l;
-<<<<<<< HEAD
-	unsigned long long	m[2],n[2];
-=======
 	unsigned long long m[2],n[2];
->>>>>>> 71710ff01cfd3f702e9589e5c1ff61dd85870cb9
 	float fot;
 	char *c1,*c2,ch[300],buf[20];
 	for(i=0;i<2;i++)
@@ -533,7 +516,7 @@ void get_temp()
 {
 	int i,j,k;
 	FILE *file;
-	char buf[100];
+	char buf[100],c1[10];
 	zero(msg[8]);
 	file=fopen(cpu_temp,"r");
 	if(file==NULL)
@@ -544,9 +527,20 @@ void get_temp()
 	zero(buf);
 	fgets(buf,sizeof(buf),file);
 	fclose(file);
-	i=atoi(buf);
-	snprintf(msg[8],sizeof(msg[8]),"%d℃ ",i/1000);
-	zero(msg[2]);
+	memset(c1,0,sizeof(c1));
+	for(i=0;i<100;i++)
+	{
+		if(buf[i]>=0x30 && buf[i]<=0x39)
+		{
+			c1[0]=buf[i++];
+			c1[1]=buf[i];c1[2]=0;
+			snprintf(msg[8],sizeof(msg[8]),"%s℃ ",c1);
+			return;
+		}
+	}
+//	i=atoi(buf);
+	snprintf(msg[8],sizeof(msg[8]),"EE℃ ");
+/*	zero(msg[2]);
 	file=fopen(video_temp,"r");
 	if(file==NULL)
 	{
@@ -557,7 +551,7 @@ void get_temp()
 	fgets(buf,sizeof(buf),file);
 	fclose(file);
 	i=atoi(buf);
-	snprintf(msg[2],sizeof(msg[2]),"%d℃ ",i/1000);
+	snprintf(msg[2],sizeof(msg[2]),"%d℃ ",i/1000); */
 	return;
 }//}}}
 //{{{ void get_maichk()
