@@ -1,0 +1,12 @@
+#!/bin/sh
+echo '{ "version": 1 }'
+myvar=0
+while :;
+do
+	sleep 1
+	let "myvar += 1"
+	if [ $myvar -gt 10 ];then
+		let "myvar = 0"
+		check_mail
+	fi	
+done

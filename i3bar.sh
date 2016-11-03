@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # vim:ts=4:sw=4:expandtab
 # © 2012 Michael Stapelberg, Public Domain
 
@@ -20,11 +20,15 @@ echo '['
 
 # We send an empty first array of blocks to make the loop simpler:
 echo '[]'
-
+myvar=100
 # Now send blocks with information forever:
-while :;
+while true
 do
-     echo ",[{\"name\":\"time\",\"full_text\":\"$(i3msg)\"}]"
-#    echo ",[{\"name\":\"time\",\"full_text\":\"$(date)\"}]"
+	let "myvar += 1"
+	if [ $myvar -gt 20 ];then
+		let "myvar = 0"
+		check_mail
+	fi
 	sleep 2
+    echo ",[{\"name\":\"time\",\"full_text\":\"`i3msg`\"}]"
 done

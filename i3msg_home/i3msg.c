@@ -7,9 +7,17 @@
 //{{{ int main(int argc,char** argv)
 int main(int argc,char** argv)
 {
+<<<<<<< HEAD
 	//get_config();
+=======
+	char* av[]={weather,0};
+	int i,j,job[jc];
+	static int k=0;
+	set_unique(argv[0]);
+	get_config();
+>>>>>>> 71710ff01cfd3f702e9589e5c1ff61dd85870cb9
 	format_msg(0);//初次运行时获取天气
-	get_batt();// 初次运行时获取电量
+	//get_batt();// 初次运行时获取电量
 	get_cpu();//cpu
 	get_mem();//mem
 	get_net();//net
@@ -90,45 +98,27 @@ void format_msg(int i)
 //{{{ int disp_msg()
 int disp_msg()
 {
-	int mo[12]={31,28,31,30,31,30,31,31,30,31,30,31};
+	//int mo[12]={31,28,31,30,31,30,31,31,30,31,30,31};
 	struct tm *p;
 	time_t txm;
 	int i,j,k,l,y;
 	char ch[100];
 	zero(ch);
 	time(&txm);
+	txm+=3600*8;//转换为东8时区
 	p=gmtime(&txm);
 	j=p->tm_mday;
-	i=p->tm_hour+8;
+	i=p->tm_hour;
 	y=p->tm_year+1900;
 	l=p->tm_mon+1;
-	if(i>23)
-	{
-		i-=24;
-		j+=1;
-		k=p->tm_year+1900;
-		if(k%4==0)
-		{
-			k=k/4;
-			if(k%100==0 && k%400!=0)
-				mo[1]=28;
-			else
-				mo[1]=29;
-		}
-		if(j>mo[p->tm_mon])
-		{
-			l=p->tm_mon+2;
-			j=1;
-		}
-		if(l>12)
-		{
-			y=p->tm_year+1901;
-			l=1;
-		}
-	}
 	snprintf(ch,sizeof(ch),"%d年%d月%d日 %d时%d分",y,l,j,i,p->tm_min);
+<<<<<<< HEAD
 	memset(fmt,0,chlen);
 	snprintf(fmt,chlen,out_msg,msg[9],msg[5],msg[8],msg[4],msg[3],msg[6],msg[7],msg[2],msg[1],msg[0],ch);
+=======
+	memset(fmt,0,chlen);//memset(msg[2],0,sizeof(msg[2]));
+	snprintf(fmt,chlen,out_msg,msg[9],msg[2],msg[5],msg[8],msg[4],msg[3],msg[6],msg[7],msg[1],msg[0],ch);
+>>>>>>> 71710ff01cfd3f702e9589e5c1ff61dd85870cb9
 	printf(fmt);
 	return 0;
 }//}}}
@@ -350,7 +340,11 @@ void get_net()
 {//取得文件：/proc/net/dev,数据位于第四行，需要计算两次访问之间字节差以获得进出的流量 1,9
 	FILE *file;
 	int i,j,k,l;
+<<<<<<< HEAD
 	unsigned long long	m[2],n[2];
+=======
+	unsigned long long m[2],n[2];
+>>>>>>> 71710ff01cfd3f702e9589e5c1ff61dd85870cb9
 	float fot;
 	char *c1,*c2,ch[300],buf[20];
 	for(i=0;i<2;i++)
@@ -552,6 +546,18 @@ void get_temp()
 	fclose(file);
 	i=atoi(buf);
 	snprintf(msg[8],sizeof(msg[8]),"%d℃ ",i/1000);
+	zero(msg[2]);
+	file=fopen(video_temp,"r");
+	if(file==NULL)
+	{
+		snprintf(msg[2],sizeof(msg[2]),"00 ");
+		return;
+	}
+	zero(buf);
+	fgets(buf,sizeof(buf),file);
+	fclose(file);
+	i=atoi(buf);
+	snprintf(msg[2],sizeof(msg[2]),"%d℃ ",i/1000);
 	return;
 }//}}}
 //{{{ void get_maichk()
